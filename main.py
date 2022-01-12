@@ -1,14 +1,17 @@
 from random import random
 
 from kivy.config import Config
-from kivy.properties import NumericProperty, StringProperty
+from kivy.graphics import Line, Rectangle, Ellipse
+from kivy.graphics.context_instructions import Color
+from kivy.metrics import dp
+from kivy.properties import NumericProperty, StringProperty, Clock
 from kivy.uix.screenmanager import Screen
 
 
 #nastavení do proměních velikost hrací plochy v pixelech
 height = 720
 width = 1280
-
+FPS = 120
 Config.set('graphics', 'width', width)
 Config.set('graphics', 'height', height)
 
@@ -33,6 +36,71 @@ class MainWidget(Screen):
 
     def on_text_validate2(self, widget):
         self.playerName2 = widget.text
+class CanvasExample3(Widget):
+        pass
+
+class CanvasExample2(Widget):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.ball_size = dp(30)
+        self.vx = dp(20)
+        self.vy = dp(15)
+        self.gravity = dp(2)
+        with self.canvas:
+          self.ball = Ellipse(pos= self.center, size=(self.ball_size, self.ball_size))
+        Clock.schedule_interval(self.update, 1/FPS)
+
+    def on_size(self, *args):
+        # print("on size :" + str(self.width) + " ," + str(self.height))
+        self.ball.pos = (self.center_x-self.ball_size/2,self.center_y-self.ball_size/2)
+    def update(self, dt):
+        #print("update")
+        x, y = self.ball.pos
+        x += self.vx
+        y += self.vy
+        y -= self.gravity
+        self.gravity += 1
+        self.ball.pos = (x, y)
+
+
+        if x + self.ball_size > self.width:
+            x = self.width-self.ball_size
+            self.vx = -self.vx
+        if y < 0:
+            y = 0
+            self.vy = -self.vy + self.gravity
+            self.gravity = dp(1)
+        if x < 0:
+            x = 0
+            self.vx = -self.vx
+
+
+
+
+# class CanvasExample(Widget):
+#     def __init__(self, **kwargs):
+#         super().__init__(**kwargs)
+#         with self.canvas:
+#             Line(points=(100, 100, 400, 500), width=2)
+#             Color(0, 1, 0)
+#             Line(circle=(400, 200, 80), width=2)
+#             Line(rectangle=(700, 500, 150, 100), width=5)
+#             self.rect = Rectangle(pos=(700,200), size=(150,100))
+#
+#     def on_button_a_click(self):
+#         #print("click")
+#         x, y = self.rect.pos
+#         w, h = self.rect.size
+#         inc = dp(10)
+#
+#
+#         diff = self.width -(x+w)
+#         if diff < inc:
+#             inc = diff
+#
+#         x += inc
+#         self.rect.pos = (x, y)
+
 
 class TheVolleyGameApp(App):
     pass
