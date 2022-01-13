@@ -11,7 +11,7 @@ from kivy.uix.screenmanager import Screen
 #nastavení do proměních velikost hrací plochy v pixelech
 height = 720
 width = 1280
-FPS = 120
+FPS = 60
 Config.set('graphics', 'width', width)
 Config.set('graphics', 'height', height)
 
@@ -24,7 +24,7 @@ class MainWidget(Screen):
     playerName1 = StringProperty("Player1")
     playerName2 = StringProperty("Player2")
     index = 11
-    index2 = 11
+    right_index = 11
     STATES = ['ARG', 'AUS', 'AUT', 'BEL', 'BLR', 'BRA', 'BUL', 'CAN', 'COL', 'CRO', 'CUB', 'CZE', 'DEN', 'EGY', 'ESP',
               'EST', 'FIN', 'FRA', 'GBR', 'GER', 'GRE', 'HUN', 'CHN', 'IND', 'IRL', 'IRN', 'ISL', 'ISR', 'ITA', 'JAP',
               'KOR', 'LAT', 'LIT', 'MAR', 'MEX', 'NED', 'NGR', 'NOR', 'NZL', 'PAK', 'POL', 'POR', 'ROM', 'RUS', 'SLO',
@@ -43,12 +43,14 @@ class CanvasExample2(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.ball_size = dp(30)
-        self.vx = dp(20)
-        self.vy = dp(15)
-        self.gravity = dp(2)
+        self.vx = dp(5)
+        self.vy = dp(5)
+        self.gravity = dp(1)
         with self.canvas:
           self.ball = Ellipse(pos= self.center, size=(self.ball_size, self.ball_size))
+          self.rect = Rectangle(pos=(dp(300), dp(300)), size=(dp(100), dp(100)))
         Clock.schedule_interval(self.update, 1/FPS)
+
 
     def on_size(self, *args):
         # print("on size :" + str(self.width) + " ," + str(self.height))
@@ -56,11 +58,14 @@ class CanvasExample2(Widget):
     def update(self, dt):
         #print("update")
         x, y = self.ball.pos
+        xr, yr = self.rect.pos
         x += self.vx
         y += self.vy
         y -= self.gravity
         self.gravity += 1
         self.ball.pos = (x, y)
+
+
 
 
         if x + self.ball_size > self.width:
