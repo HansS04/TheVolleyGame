@@ -1,28 +1,76 @@
-CanvasExample2:
+<Ball>
+    size: 16,16
+    canvas:
+        Ellipse:
+            pos: self.pos
+            size: self.ball_size,self.ball_size
+
+<VolleyPlayer>
+    canvas.before:
+        Color:
+            rgba: 1,1,1,1
+        Rectangle:
+            size: dp(120),dp(200)
+            pos: self.pos
+            source: 'img/player.png'
+<VolleyPlayer2>
+    canvas.before:
+        Color:
+            rgba: 1,1,1,1
+        Rectangle:
+            size: dp(120),dp(200)
+            pos: self.pos
+            source: 'img/player.png'
+
+<Net>
+    canvas.before:
+        Color:
+            rgba: 1,1,1,1
+        Rectangle:
+            size: dp(20),dp(350)
+            pos: self.pos
 
 
-<CanvasExample3>
-    BoxLayout:
-        size: root.size
-        Widget:
-            canvas:
-                Color:
-                    rgb: 0,1,0
-                Rectangle:
-                    size: self.size
-        RelativeLayout:
-            canvas:
-                Color:
-                    rgb: 0,0,1
-                Rectangle:
-                    size: self.size
+
+<Game>
+    ball: volley_ball
+    vp: player_left
+    vp2: player_right
+    net: net_volley
 
 
-<CanvasExample>
-    Button:
-        pos: 100,400
-        text: "A"
-        on_press: root.on_button_a_click()
+    on_enter:
+        root.ids.player_left.speed = root.manager.screens[0].ids.my_slider.value
+        root.ids.p_name.text = root.manager.screens[0].ids.my_text_input.text
+        root.ids.p_name2.text = root.manager.screens[0].ids.my_text_input2.text
+        root.start()
+    Label:
+        id: p_name
+        pos: dp(-350), dp(300)
+        size: dp(50), dp(50)
+        text: "test"
+    Label:
+        id: p_name2
+        pos: dp(350), dp(300)
+        size: dp(50), dp(50)
+        text: "test"
+
+
+    Ball:
+        id: volley_ball
+        speed: 50
+
+    VolleyPlayer:
+        id: player_left
+        name: 'Left'
+        speed: 50
+    VolleyPlayer2:
+        id: player_right
+        name: "right"
+        speed: 50
+    Net:
+        id: net_volley
+
 
 <MainWidget>:
 
@@ -46,6 +94,8 @@ CanvasExample2:
             pos_hint: {'x': .25, 'y': .2}
             size_hint: .5,.25
             text: "Start"
+            on_press:
+                root.manager.current = 'canvas'
         BoxLayout:
             BoxLayout:
                 orientation: 'horizontal'
@@ -88,7 +138,7 @@ CanvasExample2:
                     Label:
                         font_name: 'fonts/Bebasneue-Regular.ttf'
                         font_size: 50
-                        text: "speed"
+                        text: "FPS"
                     BoxLayout:
                         id: settings
                         size_hint: .8,2
@@ -96,8 +146,8 @@ CanvasExample2:
                         Slider:
                             height: 800
                             id: my_slider
-                            min: 0
-                            max: 100
+                            min: 2
+                            max: 60
                             value: 50
                             orientation: "vertical"
                         Label:
@@ -118,7 +168,7 @@ CanvasExample2:
                                 pos: self.pos
                                 size: self.size
                     TextInput:
-                        id: my_text_input
+                        id: my_text_input2
                         size_hint: 1, None
                         height: "50dp"
                         text: "Player 2"
