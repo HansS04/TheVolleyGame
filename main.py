@@ -12,9 +12,9 @@ from kivy.uix.screenmanager import Screen, ScreenManager
 height = 720
 width = 1280
 FPS = 60
-max_speed = 50
-min_speed = 5
-
+vx = dp(5)
+vy = dp(6)
+gravity = dp(1)
 
 from kivy.app import App
 from kivy.uix.widget import Widget
@@ -58,14 +58,15 @@ class VolleyPlayer(Widget):
                 self.y -= self.gravity
 
         if self.right:
-            self.x += dp(10)
+            self.x += dp(15)
             self.y -= self.gravity
         if self.left:
-            self.x -= dp(10)
+            self.x -= dp(15)
             self.y -= self.gravity
         if self.x >= width  / 2 - dp(120):
             self.x = width / 2 - 120
-
+        if self.x < 0:
+            self.x = 0
         if self.y <= 0:
             self.y = 0
 
@@ -89,15 +90,15 @@ class VolleyPlayer2(Widget):
                 self.y -= self.gravity
 
         if self.right:
-            self.x += dp(10)
+            self.x += dp(15)
             self.y -= self.gravity
         if self.left:
-            self.x -= dp(10)
+            self.x -= dp(15)
             self.y -= self.gravity
         if self.x <= width/2 +20:
                 self.x = width/2 + 20
-
-
+        if self.x > self.width - 120:
+                self.x = width - 120
         if self.y <= 0:
             self.y = 0
 
@@ -111,43 +112,8 @@ class Ball(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.ball_size = dp(30)
-        self.vx = dp(5)
-        self.vy = dp(10)
-        self.gravity = dp(6)
-
         self.width = self.ball_size
         self.pos = (width /2 - self.ball_size /2, height/2 - self.ball_size / 2 + 200)
-        self.n = random.randint(0, 1)
-
-
-    def Move(self, width):
-        x, y = self.pos
-
-        if self.speed <= 0:
-            self.vx = min_speed
-            self.vy = min_speed
-            self.gravity = min_speed
-
-        if self.n == 0:
-            x += self.vx
-        else:
-            x -= self.vx
-        y += self.vy
-        y -= self.gravity
-        self.gravity += 1
-        self.pos = (x, y)
-
-        if x + self.ball_size > width:
-            x = width - self.ball_size
-            self.vx = -self.vx
-        if y < 0:
-            y = 0
-            self.vy = -self.vy + self.gravity
-            self.gravity = dp(1)
-        if x < 0:
-            x = 0
-            self.vx = -self.vx
-
 
 class Game(Screen):
     ball = ObjectProperty(None)
@@ -161,6 +127,11 @@ class Game(Screen):
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
         self._keyboard.bind(on_key_up=self._on_keyboard_up)
+        self.n = random.randint(0, 1)
+        self.gravity = gravity
+        self.vx = vx
+        self.vy = vy
+        self.ball_size = dp(30)
 
     def start(self):
 
@@ -215,16 +186,63 @@ class Game(Screen):
         if keycode[1] == 'right':
             self.vp2.right = False
 
-
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
         self._keyboard.unbind(on_key_up=self._on_keyboard_up)
         self._keyboard = None
+    def bounce_of_ball(self):
+        x, y = self.ball.pos
+        netx, nety = self.net.pos
+
+
+        if self.n == 0:
+            x += self.vx
+        else:
+            x -= self.vx
+        y += self.vy
+        y -= self.gravity
+        self.gravity += 1
+        self.ball.pos = (x, y)
+        if x + self.ball_size > width:
+            x = width - self.ball_size
+            self.vx = -self.vx
+        if y < 0:
+            y = 0
+            self.vy = -self.vy + self.gravity
+            self.gravity = dp(1)
+
+        if x < 0:
+            x = 0
+            self.vx = -self.vx
+
+        #kolize se sítí
+        print(y)
+        if y == dp(350) and x>= netx - self.ball_size and x< netx + 20:
+            print("narazil jsem zezhora")
+            print(x,y)
+            y = 350 + self.ball_size
+            self.vy = -self.vy + self.gravity
+            self.gravity = dp(1)
+        if x == netx - self.ball_size and y <= dp(350):
+            print("narazil jsem z leva")
+            print(x, y)
+            x = netx - self.ball_size
+            self.vx = -self.vx
+        if x == netx + 40 - self.ball_size and y <= dp(350):
+            print("narazil jsem z prava")
+            print(x,y)
+            x = netx + 40 - self.ball_size
+            self.vx = -self.vx
+
+
+
+
+
 
     def update(self, dt):
-        self.ball.Move(self.width)
         self.vp.move()
         self.vp2.move()
+        self.bounce_of_ball()
 
 
 class Canvas(Screen):
