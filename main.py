@@ -121,6 +121,8 @@ class Game(Screen):
     vp2 = ObjectProperty(None)
 
     net = ObjectProperty(None)
+    score1 = NumericProperty(0)
+    score2 = NumericProperty(0)
 
     def __init__(self, **kwargs):
         super(Game, self).__init__(**kwargs)
@@ -132,6 +134,9 @@ class Game(Screen):
         self.vx = vx
         self.vy = vy
         self.ball_size = dp(30)
+        self.score1 = 0
+        self.score2 = 0
+
 
     def start(self):
 
@@ -193,11 +198,14 @@ class Game(Screen):
     def bounce_of_ball(self):
         x, y = self.ball.pos
         netx, nety = self.net.pos
+        px, py = self.vp.pos
+        px2, py2 = self.vp2.pos
 
 
         if self.n == 0:
             x += self.vx
         else:
+
             x -= self.vx
         y += self.vy
         y -= self.gravity
@@ -210,9 +218,15 @@ class Game(Screen):
             y = 0
             self.vy = -self.vy + self.gravity
             self.gravity = dp(1)
+            if x > width/2:
+                self.score1 += 1
+            else:
+                self.score2 += 1
+
 
         if x < 0:
             x = 0
+            self.ball.pos = (x,y)
             self.vx = -self.vx
 
         #kolize se sítí
@@ -233,10 +247,39 @@ class Game(Screen):
             print(x,y)
             x = netx + 40 - self.ball_size
             self.vx = -self.vx
+        #kolize s hráčem
+        if y >= py and y <= py + dp(200) and x >= px - self.ball_size  and x <= px - self.ball_size + dp(30):
+
+            x = px  - self.ball_size
+            self.ball.pos = (x, y)
+
+            self.vx = -self.vx
+
+        if y >= py and y <= py + dp(200) and x >= px + dp(95) and x <= px + dp(120):
+            x = px + dp(120)
+            self.ball.pos = (x,y)
+
+            self.vx = -self.vx
+        #kolize s druhym hracem
+        if y >= py2 and y <= py2 + dp(200) and x >= px2 - self.ball_size and x <= px2 - self.ball_size + dp(60):
+            x = px2 - self.ball_size
+            self.ball.pos = (x, y)
+
+            self.vx = -self.vx
+
+        if y >= py2 and y <= py2 + dp(200) and x >= px2 + dp(95) and x <= px2 + dp(120):
+            x = px2 + dp(120)
+            self.ball.pos = (x, y)
+
+            self.vx = -self.vx
 
 
 
-
+        if self.vx != vx or self.vx != -vx:
+            if self.vx < 0:
+                self.vx = -vx
+            if self.vx > 0:
+                self.vx = vx
 
 
     def update(self, dt):

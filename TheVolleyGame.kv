@@ -45,7 +45,18 @@
         root.ids.p_name2.text = root.manager.screens[0].ids.my_text_input2.text
         root.start()
     Label:
+        id: score
+        font_name: "fonts/Lcd.ttf"s
+        text: str(root.score1)
+        pos: dp(-250), dp(300)
+    Label:
+        id: score2
+        font_name: "fonts/Lcd.ttf"
+        text: str(root.score2)
+        pos: dp(-150), dp(300)
+    Label:
         id: p_name
+
         pos: dp(-350), dp(300)
         size: dp(50), dp(50)
         text: "test"
