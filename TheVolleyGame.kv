@@ -30,8 +30,6 @@
             size: dp(20),dp(350)
             pos: self.pos
 
-
-
 <Game>
     ball: volley_ball
     vp: player_left
@@ -46,14 +44,16 @@
         root.start()
     Label:
         id: score
-        font_name: "fonts/Lcd.ttf"s
+        font_name: "fonts/Lcd.ttf"
+        font_size: dp(100)
         text: str(root.score1)
-        pos: dp(-250), dp(300)
+        pos: dp(-150), dp(300)
     Label:
         id: score2
         font_name: "fonts/Lcd.ttf"
+        font_size: dp(100)
         text: str(root.score2)
-        pos: dp(-150), dp(300)
+        pos: dp(150), dp(300)
     Label:
         id: p_name
 

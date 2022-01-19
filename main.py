@@ -15,7 +15,6 @@ FPS = 60
 vx = dp(5)
 vy = dp(6)
 gravity = dp(1)
-
 from kivy.app import App
 from kivy.uix.widget import Widget
 
@@ -29,20 +28,16 @@ class MainWidget(Screen):
               'EST', 'FIN', 'FRA', 'GBR', 'GER', 'GRE', 'HUN', 'CHN', 'IND', 'IRL', 'IRN', 'ISL', 'ISR', 'ITA', 'JAP',
               'KOR', 'LAT', 'LIT', 'MAR', 'MEX', 'NED', 'NGR', 'NOR', 'NZL', 'PAK', 'POL', 'POR', 'ROM', 'RUS', 'SLO',
               'SRB', 'SUI', 'SVK', 'SWE', 'TUN', 'TUR', 'UKR', 'URU', 'USA']
-
     #definice pro funkci na nastavení jmen jednotlivých hráčů
     def on_text_validate(self, widget):
         self.playerName1 = widget.text
-
     def on_text_validate2(self, widget):
         self.playerName2 = widget.text
-
 class VolleyPlayer(Widget):
     up = False
     down = False
     right = False
     left = False
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.pos = (width - (width / 4) * 3, 0)
@@ -53,23 +48,22 @@ class VolleyPlayer(Widget):
         if self.up:
             while (self.y <= 200):
                 self.y += dp(1)
+
         if self.y == dp(200):
             while (self.y > 0):
                 self.y -= self.gravity
-
         if self.right:
             self.x += dp(15)
             self.y -= self.gravity
         if self.left:
             self.x -= dp(15)
             self.y -= self.gravity
-        if self.x >= width  / 2 - dp(120):
+        if self.x >= width / 2 - dp(120):
             self.x = width / 2 - 120
         if self.x < 0:
             self.x = 0
         if self.y <= 0:
             self.y = 0
-
 class VolleyPlayer2(Widget):
     up = False
     down = False
@@ -79,15 +73,12 @@ class VolleyPlayer2(Widget):
         super().__init__(**kwargs)
         self.pos = (width - width / 4 , 0)
         self.gravity = dp(15)
-
     def move(self):
         self.y -= self.gravity
         if self.up:
-            while(self.y <= 200):
+            while (self.y <= 200):
                 self.y += dp(1)
-        if self.y == dp(200):
-            while(self.y > 0):
-                self.y -= self.gravity
+
 
         if self.right:
             self.x += dp(15)
@@ -101,14 +92,12 @@ class VolleyPlayer2(Widget):
                 self.x = width - 120
         if self.y <= 0:
             self.y = 0
-
 class Net(Widget):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.pos = (width/2, 0)
 
 class Ball(Widget):
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.ball_size = dp(30)
@@ -119,10 +108,12 @@ class Game(Screen):
     ball = ObjectProperty(None)
     vp = ObjectProperty(None)
     vp2 = ObjectProperty(None)
-
     net = ObjectProperty(None)
     score1 = NumericProperty(0)
     score2 = NumericProperty(0)
+
+
+
 
     def __init__(self, **kwargs):
         super(Game, self).__init__(**kwargs)
@@ -137,11 +128,8 @@ class Game(Screen):
         self.score1 = 0
         self.score2 = 0
 
-
     def start(self):
-
         Clock.schedule_interval(self.update, 1 / self.vp.speed)
-
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         # print(keycode)
         # Testy pro tlačítka, která nás zajímají
@@ -196,19 +184,18 @@ class Game(Screen):
         self._keyboard.unbind(on_key_up=self._on_keyboard_up)
         self._keyboard = None
     def bounce_of_ball(self):
+
         x, y = self.ball.pos
         netx, nety = self.net.pos
         px, py = self.vp.pos
         px2, py2 = self.vp2.pos
 
-
         if self.n == 0:
             x += self.vx
         else:
-
             x -= self.vx
-        y += self.vy
         y -= self.gravity
+        y += self.vy
         self.gravity += 1
         self.ball.pos = (x, y)
         if x + self.ball_size > width:
@@ -222,58 +209,73 @@ class Game(Screen):
                 self.score1 += 1
             else:
                 self.score2 += 1
-
-
         if x < 0:
             x = 0
             self.ball.pos = (x,y)
             self.vx = -self.vx
+        if y > height - dp(100):
+            y = height - dp(100)
+            self.ball.pos = (x,y)
 
         #kolize se sítí
-        print(y)
-        if y == dp(350) and x>= netx - self.ball_size and x< netx + 20:
+
+        if y >= dp(320) and y <= dp(350)  and x>= netx - self.ball_size and x< netx + 20:
             print("narazil jsem zezhora")
-            print(x,y)
             y = 350 + self.ball_size
             self.vy = -self.vy + self.gravity
             self.gravity = dp(1)
+            self.ball.pos=(x,y)
+
         if x == netx - self.ball_size and y <= dp(350):
             print("narazil jsem z leva")
-            print(x, y)
             x = netx - self.ball_size
             self.vx = -self.vx
-        if x == netx + 40 - self.ball_size and y <= dp(350):
-            print("narazil jsem z prava")
-            print(x,y)
-            x = netx + 40 - self.ball_size
-            self.vx = -self.vx
-        #kolize s hráčem
-        if y >= py and y <= py + dp(200) and x >= px - self.ball_size  and x <= px - self.ball_size + dp(30):
-
-            x = px  - self.ball_size
             self.ball.pos = (x, y)
 
+        if x == netx + 40 - self.ball_size and y <= dp(350):
+            print("narazil jsem z prava")
+            x = netx + 40 - self.ball_size
+            self.vx = -self.vx
+            self.ball.pos = (x, y)
+
+        # kolize s hráčem zezhora
+        if x >= px - self.ball_size  and x <= px - self.ball_size + dp(120) and y <= py + dp(220) and y >= py + dp(190):
+            print("narazil jsi zezhora hráče")
+            y = py + dp(210) + self.ball_size
+            self.gravity = dp(1)
+            self.vy = - self.vy + self.gravity
+            self.ball.pos = (x,y)
+
+        if x >= px2 - self.ball_size  and x <= px2 - self.ball_size + dp(120) and y <= py2 + dp(220) and y >= py2 + dp(190):
+            print("narazil jsi zezhora hráče")
+            y = py2 + dp(210) + self.ball_size
+            self.gravity = dp(1)
+            self.vy = - self.vy + self.gravity
+            self.ball.pos = (x,y)
+
+
+
+        #kolize s hráčem
+        if y >= py and y <= py + dp(200) and x >= px - self.ball_size  and x <= px - self.ball_size + dp(30):
+            x = px  - self.ball_size
+            self.ball.pos = (x, y)
             self.vx = -self.vx
 
         if y >= py and y <= py + dp(200) and x >= px + dp(95) and x <= px + dp(120):
             x = px + dp(120)
             self.ball.pos = (x,y)
-
             self.vx = -self.vx
+
         #kolize s druhym hracem
         if y >= py2 and y <= py2 + dp(200) and x >= px2 - self.ball_size and x <= px2 - self.ball_size + dp(60):
             x = px2 - self.ball_size
             self.ball.pos = (x, y)
-
             self.vx = -self.vx
 
         if y >= py2 and y <= py2 + dp(200) and x >= px2 + dp(95) and x <= px2 + dp(120):
             x = px2 + dp(120)
             self.ball.pos = (x, y)
-
             self.vx = -self.vx
-
-
 
         if self.vx != vx or self.vx != -vx:
             if self.vx < 0:
@@ -281,15 +283,10 @@ class Game(Screen):
             if self.vx > 0:
                 self.vx = vx
 
-
     def update(self, dt):
         self.vp.move()
         self.vp2.move()
         self.bounce_of_ball()
-
-
-class Canvas(Screen):
-        pass
 
 
 class TheVolleyGameApp(App):
